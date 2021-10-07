@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+djangorestframework = "*"
+django-environ = "*"
+dj-database-url = "*"
+pillow = "*"
+djangorestframework-simplejwt = "*"
+django-cors-headers = "*"
+djangorestframework-camel-case = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
