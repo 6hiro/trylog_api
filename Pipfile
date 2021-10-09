@@ -12,6 +12,7 @@ pillow = "*"
 djangorestframework-simplejwt = "*"
 django-cors-headers = "*"
 djangorestframework-camel-case = "*"
+pyjwt = "==2.1.0"
 
 [dev-packages]
 
