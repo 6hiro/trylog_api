@@ -21,25 +21,27 @@ class RegisterView(generics.GenericAPIView):
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
-        serializer.is_valid()
-        serializer.save()
-        user_data = serializer.data
+        if serializer.is_valid():
+            serializer.save()
+            user_data = serializer.data
 
-        user = get_user_model().objects.get(email=user_data['email'])
-        token = RefreshToken.for_user(user).access_token
+            user = get_user_model().objects.get(email=user_data['email'])
+            token = RefreshToken.for_user(user).access_token
 
-        current_site = get_current_site(request).domain
-        relativeLink = reverse('apiv1:email-verify')
+            current_site = get_current_site(request).domain
+            relativeLink = reverse('apiv1:email-verify')
 
-        absrul = 'http://' + current_site + \
-            relativeLink + "?token=" + str(token)
-        email_body = user.email + \
-            'さん、ご登録ありがとうございます。\nメールアドレスに間違いがなければ、以下のリンクからログインしてください。 \n' + absrul
-        data = {'email_body': email_body, 'to_email': user.email,
-                'email_subject': 'メールアドレスを確認してください'}
-        Util.send_email(data)
+            absrul = 'http://' + current_site + \
+                relativeLink + "?token=" + str(token)
+            email_body = user.email + \
+                'さん、ご登録ありがとうございます。\nメールアドレスに間違いがなければ、以下のリンクからログインしてください。 \n' + absrul
+            data = {'email_body': email_body, 'to_email': user.email,
+                    'email_subject': 'メールアドレスを確認してください'}
+            Util.send_email(data)
 
-        return Response(user_data, status=status.HTTP_201_CREATED)
+            return Response(user_data, status=status.HTTP_201_CREATED)
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class VerifyEmail(views.APIView):

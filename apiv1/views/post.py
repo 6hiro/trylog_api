@@ -14,7 +14,7 @@ from ..permissions import IsOwnPostOrReadOnly
 class CreateUpdateDeletePostView(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     queryset = PostModel.objects.filter(is_public="public")
     serializer_class = CreateUpdateDeletePostSerializer
-    permission_classes = (IsOwnPostOrReadOnly,)
+    permission_classes = (IsOwnPostOrReadOnly, IsAuthenticated)
 
     def perform_create(self, serializer):
         serializer.save(posted_by=self.request.user)

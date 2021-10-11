@@ -101,7 +101,8 @@ class CreateUpdateDeletePostSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         tags = []
         # print(validated_data)
-        validated_data.pop('tags')
+        # if validated_data.get('tags', None):
+        #     validated_data.pop('tags')
         for word in validated_data['post'].split():
             if (word[0] == '#'):
                 tag = TagModel.objects.filter(name=word[1:]).first()

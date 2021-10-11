@@ -6,13 +6,13 @@ name = "pypi"
 [packages]
 django = "*"
 djangorestframework = "*"
-django-environ = "*"
 dj-database-url = "*"
 pillow = "*"
 djangorestframework-simplejwt = "*"
 django-cors-headers = "*"
 djangorestframework-camel-case = "*"
 pyjwt = "==2.1.0"
+django-environ = "*"
 
 [dev-packages]
 
