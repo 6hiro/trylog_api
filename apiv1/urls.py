@@ -31,6 +31,7 @@ urlpatterns = [
     path('followers/', account.get_followers, name='get-followers-profile'),
     path('follow/<uuid:id>/', account.follow_user, name="follow-user"),
     # post
+    path('post/favorite/<uuid:id>/', post.get_favorite_post, name="favorite-post"),
     path('post/like/<uuid:id>/', post.like_post, name="like-post"),
     path('post/like/profile/', post.get_profiles_like_post,
          name='get-profiles-like-post'),

@@ -12,7 +12,8 @@ from ..permissions import IsOwnPostOrReadOnly
 
 
 class CreateUpdateDeletePostView(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
-    queryset = PostModel.objects.filter(is_public="public")
+    # queryset = PostModel.objects.filter(is_public="public")
+    queryset = PostModel.objects.all()
     serializer_class = CreateUpdateDeletePostSerializer
     permission_classes = (IsOwnPostOrReadOnly, IsAuthenticated)
 
@@ -26,13 +27,18 @@ class GetPostView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     permission_classes = (IsOwnPostOrReadOnly,)
 
     def get_queryset(self):
-        return PostModel.objects.filter(Q(is_public="public") | Q(posted_by=self.request.user))
+        if self.request.user.is_authenticated:
+            return PostModel.objects.filter(Q(is_public="public") | Q(posted_by=self.request.user))
+        return PostModel.objects.filter(is_public="public")
 
 
 @api_view(['GET'])
 def post_search(request, id):
-    posts = PostModel.objects.filter(Q(post__contains=id, is_public="public") | Q(
-        post__contains=id, posted_by=request.user))
+    try:
+        posts = PostModel.objects.filter(Q(post__contains=id, is_public="public") | Q(
+            post__contains=id, posted_by=request.user))
+    except Exception as e:
+        posts = PostModel.objects.filter(post__contains=id, is_public="public")
     paginator = PageNumberPagination()
     paginator.page_size = 10
     result_page = paginator.paginate_queryset(posts, request)
@@ -40,10 +46,13 @@ def post_search(request, id):
     return paginator.get_paginated_response(serializer.data)
 
 
-@api_view(['GET'])
+@ api_view(['GET'])
 def post_hashtag(request, id):
-    posts = PostModel.objects.filter(
-        Q(tags=id, is_public="public") | Q(tags=id, posted_by=request.user))
+    try:
+        posts = PostModel.objects.filter(
+            Q(tags=id, is_public="public") | Q(tags=id, posted_by=request.user))
+    except Exception as e:
+        posts = PostModel.objects.filter(tag=id, is_public="public")
     paginator = PageNumberPagination()
     paginator.page_size = 10
     result_page = paginator.paginate_queryset(posts, request)
@@ -51,8 +60,8 @@ def post_hashtag(request, id):
     return paginator.get_paginated_response(serializer.data)
 
 
-@api_view(['POST'])
-@permission_classes((IsAuthenticated,))
+@ api_view(['POST'])
+@ permission_classes((IsAuthenticated,))
 def like_post(request, id):
     # いいねをするもしくは外すUser
     user = request.user
@@ -74,16 +83,26 @@ def like_post(request, id):
         return Response(message, status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['POST'])
-@permission_classes((IsAuthenticated,))
+@ api_view(['POST'])
+@ permission_classes((IsAuthenticated,))
 def get_profiles_like_post(request):
     liked_by = Profile.objects.filter(user_id__in=request.data["liked_by"])
-    serializers = ProfileSerializer(liked_by, many=True)
-    return Response(serializers.data)
+    serializer = ProfileSerializer(liked_by, many=True)
+    return Response(serializer.data)
 
 
-@api_view(['GET'])
-@permission_classes((IsAuthenticated,))
+@ api_view(['GET'])
+@ permission_classes((IsAuthenticated,))
+def get_favorite_post(request, id):
+    posts = PostModel.objects.filter(liked=id)
+    # posts = PostModel.objects.filter(liked=id)
+    print(posts)
+    serializer = GetPostSerializer(posts, many=True)
+    return Response(serializer.data)
+
+
+@ api_view(['GET'])
+@ permission_classes((IsAuthenticated,))
 def comments(request, id):
     comments = CommentModel.objects.filter(post=id)
     serializer = CommentSerializer(comments, many=True)

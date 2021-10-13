@@ -238,6 +238,5 @@ class LookBackSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LookBackModel
-        fields = ['id', 'learned', 'step', 'study_time',
-                  'study_at', 'created_at', 'updated_at']
+        fields = ['id', 'learned', 'step', 'created_at', 'updated_at']
         # extra_kwargs = {'step':  {'read_only': True}}

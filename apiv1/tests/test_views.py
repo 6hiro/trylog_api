@@ -104,6 +104,52 @@ class TestMyProfileListView(APITestCase):
         self.assertEqual(content[0]["nickName"], 'nanashi')
 
 
+class TestFollowUser(APITestCase):
+    TARGET_URL = "/api/v1/follow/"
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = get_user_model().objects.create_user(
+            email="test@test.test",
+            password="testpassword"
+        )
+        cls.followedUser = get_user_model().objects.create_user(
+            email="followed@followed.followed",
+            password="testpassword"
+        )
+        cls.userProfile = Profile.objects.create(
+            user=cls.user,
+            nick_name='nanashi'
+        )
+        cls.followedUserProfile = Profile.objects.create(
+            user=cls.followedUser,
+            nick_name='followed'
+        )
+
+    def test_follow_user_success(self):
+        token = str(RefreshToken.for_user(self.user).access_token)
+        self.client.credentials(HTTP_AUTHORIZATION="JWT " + token)
+        response = self.client.post(
+            self.TARGET_URL + str(self.followedUser.id) + "/", {}, format='json')
+        # print(content)
+        # print(self.TARGET_URL + str(self.followedUser.id))
+        self.assertEqual(response.status_code, 200)
+        content = json.loads(response.content)
+        self.assertEqual(content["follower"], str(self.user.id))
+        self.assertEqual(content["following"], str(self.followedUser.id))
+
+    def test_follow_myself_error(self):
+        token = str(RefreshToken.for_user(self.user).access_token)
+        self.client.credentials(HTTP_AUTHORIZATION="JWT " + token)
+        response = self.client.post(
+            self.TARGET_URL + str(self.user.id) + '/', {}, format='json')
+        # print(response.status_code)
+        self.assertEqual(response.status_code, 200)
+        content = json.loads(response.content)
+        self.assertEqual(content["result"], 'You can not follow yourself')
+
+
 class TestCreateUpdateDeletePostView(APITestCase):
     TARGET_URL = "/api/v1/create_update_delete_post/"
 
