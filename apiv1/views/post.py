@@ -1,5 +1,6 @@
+from django.contrib.auth import get_user_model
 from django.db.models import Q
-from rest_framework import status, viewsets, mixins
+from rest_framework import generics, status, viewsets, mixins
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -12,7 +13,6 @@ from ..permissions import IsOwnPostOrReadOnly
 
 
 class CreateUpdateDeletePostView(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
-    # queryset = PostModel.objects.filter(is_public="public")
     queryset = PostModel.objects.all()
     serializer_class = CreateUpdateDeletePostSerializer
     permission_classes = (IsOwnPostOrReadOnly, IsAuthenticated)
@@ -24,12 +24,49 @@ class CreateUpdateDeletePostView(mixins.CreateModelMixin, mixins.UpdateModelMixi
 class GetPostView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = PostModel.objects.filter(is_public="public")
     serializer_class = GetPostSerializer
-    permission_classes = (IsOwnPostOrReadOnly,)
+    # permission_classes = (IsOwnPostOrReadOnly,)
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
             return PostModel.objects.filter(Q(is_public="public") | Q(posted_by=self.request.user))
         return PostModel.objects.filter(is_public="public")
+
+
+@api_view(['GET'])
+# @permission_classes((IsAuthenticated,))
+def post_user(request, id):
+    if request.user.id == id:
+        posts = get_user_model().objects.get(id=id).posted_by.all()
+    else:
+        posts = get_user_model().objects.get(id=id).posted_by.filter(is_public="public")
+    paginator = PageNumberPagination()
+    paginator.page_size = 10
+    result_page = paginator.paginate_queryset(posts, request)
+    serializer = GetPostSerializer(result_page, many=True)
+    return paginator.get_paginated_response(serializer.data)
+
+
+# @api_view(['GET', 'POST'])
+# @permission_classes((IsAuthenticated,))
+# def get_followee_post(request):
+#     posts = PostModel.objects.filter(posted_by__in=request.data["follow"])
+#     paginator = PageNumberPagination()
+#     paginator.page_size = 10
+#     result_page = paginator.paginate_queryset(posts, request)
+#     serializer = GetPostSerializer(result_page, many=True)
+#     return paginator.get_paginated_response(serializer.data)
+
+
+class GetFollowUserPost(generics.ListAPIView):
+    serializer_class = GetPostSerializer
+    permission_classes = (IsAuthenticated, )
+
+    def get_queryset(self):
+        # User = get_user_model().objects.get(id=self.request.user.id)
+        following = Profile.objects.filter(followers=self.request.user)
+        following_list = [str(i)
+                          for i in following.values_list("user", flat=True)]
+        return PostModel.objects.filter(posted_by__in=following_list)
 
 
 @api_view(['GET'])
@@ -95,10 +132,11 @@ def get_profiles_like_post(request):
 @ permission_classes((IsAuthenticated,))
 def get_favorite_post(request, id):
     posts = PostModel.objects.filter(liked=id)
-    # posts = PostModel.objects.filter(liked=id)
-    print(posts)
-    serializer = GetPostSerializer(posts, many=True)
-    return Response(serializer.data)
+    paginator = PageNumberPagination()
+    paginator.page_size = 10
+    result_page = paginator.paginate_queryset(posts, request)
+    serializer = GetPostSerializer(result_page, many=True)
+    return paginator.get_paginated_response(serializer.data)
 
 
 @ api_view(['GET'])

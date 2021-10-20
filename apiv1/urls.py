@@ -1,8 +1,6 @@
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.routers import DefaultRouter
-
-# from . import views
 from .views import account, post, roadmap
 
 app_name = 'apiv1'
@@ -20,7 +18,8 @@ urlpatterns = [
     path('', include(router.urls)),
     # register, login
     path('register/', account.RegisterView.as_view(), name="register"),
-    path('delete-account/', account.DeleteUserView.as_view(), name="delete"),
+    path('delete-account/<uuid:pk>/',
+         account.DeleteUserView.as_view(), name="delete"),
     path('email-verify/', account.VerifyEmail.as_view(), name="email-verify"),
     path('login/', account.LoginApiView.as_view(), name="login"),
     path('token/refresh/', TokenRefreshView.as_view(), name='refresh-token'),
@@ -31,6 +30,8 @@ urlpatterns = [
     path('followers/', account.get_followers, name='get-followers-profile'),
     path('follow/<uuid:id>/', account.follow_user, name="follow-user"),
     # post
+    path('post/user/<uuid:id>/', post.post_user, name='post-user'),
+    path('followuser/post/', post.GetFollowUserPost.as_view(), name='post-follow'),
     path('post/favorite/<uuid:id>/', post.get_favorite_post, name="favorite-post"),
     path('post/like/<uuid:id>/', post.like_post, name="like-post"),
     path('post/like/profile/', post.get_profiles_like_post,
@@ -40,6 +41,9 @@ urlpatterns = [
     path('post/<uuid:id>/comment/', post.comments, name="post-comments"),
     # roadmap
     path('roadmap/user/<uuid:id>/', roadmap.roadmap_user, name='roadmap-user'),
+    path('followuser/roadmap/', roadmap.GetFollowUserRoadmap.as_view(),
+         name="roadmap-follow"),
+    path('roadmap/search/<str:id>/', roadmap.roadmap_search, name="search-roadmap"),
     path('step/roadmap/<uuid:id>/', roadmap.steps, name='step-roadmap'),
     path('step/change-order', roadmap.change_step_order, name='change-step-order'),
     path('lookback/step/<uuid:id>/', roadmap.lookbacks, name='lookback-step')

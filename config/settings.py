@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     # 3rd party
     'rest_framework',
     'corsheaders',
+    'rest_framework_simplejwt.token_blacklist',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -175,7 +176,6 @@ REST_FRAMEWORK = {
         # Any other parsers
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    # 'PAGE_SIZE': 100
     'PAGE_SIZE': 10
 }
 
@@ -183,17 +183,22 @@ SIMPLE_JWT = {
     # トークンのHEADER TYPEをJWTに設定
     'AUTH_HEADER_TYPES': ('JWT',),
     # トークンの持続時間を設定
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=20),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+
 }
 
 # CORS
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ORIGIN_WHITELIST = ['http://localhost:3000']
 
+# SESSION_COOKIE_SAMESITE = 'None'
+# SESSION_COOKIE_SECURE = True
 
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = env('EMAIL_HOST')
 EMAIL_PORT = 587
 
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')

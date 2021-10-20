@@ -72,34 +72,47 @@ class LoginApiView(generics.GenericAPIView):
     serializer_class = LoginSerializer
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        serializers = self.serializer_class(data=request.data)
+        serializers.is_valid()
+        # res = Response(
+        #     {"email": serializer.data["email"]}, status=status.HTTP_200_OK)
+        # res.set_cookie(
+        #     serializer.data["tokens"]["access"],
+        #     max_age=60*20,
+        #     httponly=True
+        # )
+        # res.set_cookie(
+        #     serializer.data["tokens"]["refresh"],
+        #     max_age=60*60*12,
+        #     httponly=True
+        # )
+        return Response(serializers.data, status=status.HTTP_200_OK)
 
 
 class DeleteUserView(generics.DestroyAPIView):
+    queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
     permission_classes = (InOwnOrReadOnly,)
 
 
-@api_view(['GET'])
-@permission_classes((IsAuthenticated,))
+@ api_view(['GET'])
+@ permission_classes((IsAuthenticated,))
 def get_following(request, id):
     following = Profile.objects.filter(followers=id)
     serializers = ProfileSerializer(following, many=True)
     return Response(serializers.data)
 
 
-@api_view(['POST'])
-@permission_classes((IsAuthenticated,))
+@ api_view(['POST'])
+@ permission_classes((IsAuthenticated,))
 def get_followers(request):
     followers = Profile.objects.filter(user_id__in=request.data["followers"])
     serializers = ProfileSerializer(followers, many=True)
     return Response(serializers.data)
 
 
-@api_view(['POST'])
-@permission_classes((IsAuthenticated,))
+@ api_view(['POST'])
+@ permission_classes((IsAuthenticated,))
 def follow_user(request, id):
     # followする側のUser
     user = request.user
