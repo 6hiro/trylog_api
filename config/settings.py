@@ -13,7 +13,7 @@ import environ
 from pathlib import Path
 import os
 from datetime import timedelta
-import django_heroku
+# import django_heroku
 
 # custom user(appname.modelname)
 AUTH_USER_MODEL = 'account.User'
@@ -32,8 +32,9 @@ env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-DEBUG = env('DEBUG')
+DEBUG = False
+# DEBUG = env('DEBUG')
+DEBUG_PROPAGATE_EXCEPTIOMS = True
 
 # ALLOWED_HOSTS = [env('ALLOWED_HOSTS')]
 ALLOWED_HOSTS = ['.herokuapp.com']
@@ -206,7 +207,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
-LOGIN_URL = '/admin/login'
-LOGOUT_REDIRECT_URL = '/'
+# LOGIN_URL = '/admin/login'
+# LOGOUT_REDIRECT_URL = '/'
 
-django_heroku.settings(locals())
+# django_heroku.settings(locals())
