@@ -34,7 +34,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 # DEBUG = env('DEBUG')
-DEBUG_PROPAGATE_EXCEPTIOMS = True
+DEBUG_PROPAGATE_EXCEPTIONS = True
 
 # ALLOWED_HOSTS = [env('ALLOWED_HOSTS')]
 ALLOWED_HOSTS = ['.herokuapp.com']
