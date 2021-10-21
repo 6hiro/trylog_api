@@ -1,1 +1,1 @@
-web: gunicorn try-log.wsgi
+web: gunicorn trylog_api.wsgi
