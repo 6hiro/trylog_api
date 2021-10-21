@@ -13,6 +13,7 @@ import environ
 from pathlib import Path
 import os
 from datetime import timedelta
+import django_heroku
 
 # custom user(appname.modelname)
 AUTH_USER_MODEL = 'account.User'
@@ -206,3 +207,5 @@ EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
 LOGIN_URL = '/admin/login'
 LOGOUT_REDIRECT_URL = '/'
+
+django_heroku.settings(locals())
