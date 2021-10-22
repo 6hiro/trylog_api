@@ -32,13 +32,13 @@ env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-# DEBUG = env('DEBUG')
-DEBUG_PROPAGATE_EXCEPTIONS = True
+# DEBUG = False
+DEBUG = env('DEBUG')
+# DEBUG_PROPAGATE_EXCEPTIONS = True
 
+ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['.herokuapp.com']
 # ALLOWED_HOSTS = [env('ALLOWED_HOSTS')]
-ALLOWED_HOSTS = ['.herokuapp.com']
-
 
 # Application definition
 
@@ -174,7 +174,7 @@ REST_FRAMEWORK = {
     # snakecaseをcamelcaseに
     'DEFAULT_RENDERER_CLASSES': (
         'djangorestframework_camel_case.render.CamelCaseJSONRenderer',
-        'djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer',
+        # 'djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer',
         # Any other renders
     ),
     'DEFAULT_PARSER_CLASSES': (
@@ -202,6 +202,7 @@ SIMPLE_JWT = {
 # CORS
 CORS_ALLOW_ALL_ORIGINS = False
 # CORS_ORIGIN_WHITELIST = ['http://localhost:3000']
+FRONTEND_URL = env('CORS_ORIGIN_WHITELIST')
 CORS_ORIGIN_WHITELIST = [env('CORS_ORIGIN_WHITELIST')]
 
 
@@ -217,5 +218,5 @@ EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
 # LOGIN_URL = '/admin/login'
 # LOGOUT_REDIRECT_URL = '/'
-
-django_heroku.settings(locals())
+if DEBUG == False:
+    django_heroku.settings(locals())

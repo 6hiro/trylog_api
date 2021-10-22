@@ -58,7 +58,8 @@ class VerifyEmail(views.APIView):
                 Profile.objects.create(user=user, nick_name='ななしさん')
 
             # return Response({'email': 'Succressfully activated'}, status=status.HTTP_200_OK)
-            redirect_url = 'http://localhost:3000'
+            redirect_url = settings.FRONTEND_URL
+            # redirect_url = 'http://localhost:3000'
             return redirect(redirect_url)
 
         except jwt.ExpiredSignatureError as identifier:
