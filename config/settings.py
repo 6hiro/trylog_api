@@ -35,10 +35,10 @@ SECRET_KEY = env('SECRET_KEY')
 # DEBUG = False
 DEBUG = env('DEBUG')
 # DEBUG_PROPAGATE_EXCEPTIONS = True
-
-ALLOWED_HOSTS = []
-# ALLOWED_HOSTS = ['.herokuapp.com']
-# ALLOWED_HOSTS = [env('ALLOWED_HOSTS')]
+if DEBUG == True:
+    ALLOWED_HOSTS = []
+else:
+    ALLOWED_HOSTS = [env('ALLOWED_HOSTS')]
 
 # Application definition
 
